@@ -6,7 +6,7 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <Text>Welcome {user?.emailAddresses?.[0]?.emailAddress || 'Guest'} !</Text>
+      <Text style={styles.title}>Liste des repas enregistrés</Text>
     </View>
   )
 }
@@ -17,5 +17,10 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 16,
     backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
   },
 })
