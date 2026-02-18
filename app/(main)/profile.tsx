@@ -1,10 +1,22 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useAuth, useUser } from '@clerk/clerk-expo';
 
 export default function ProfileScreen() {
+    const { user } = useUser()
+    const { signOut } = useAuth();
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Profile</Text>
-            <Text style={styles.subtitle}>Welcome to your profile</Text>
+            <View style={styles.profileInfo}>
+                <Ionicons name="person-circle-outline" size={100} color="#00aa00" />
+                <Text style={styles.infoValue}>{user?.emailAddresses?.[0]?.emailAddress || 'Guest'}</Text>
+            </View>
+            <View style={styles.deconnection}>
+                <Pressable style={styles.button} onPress={() => signOut()}>
+                    <Ionicons name="log-out-outline" size={20} color="#ff0000" />
+                    <Text style={styles.buttonText}> Se déconnecter</Text>
+                </Pressable>
+            </View>
         </View>
     );
 }
@@ -16,13 +28,31 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#f5f5f5',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 8,
+    profileInfo: {
+        marginVertical: 8,
+        backgroundColor: '#ffffff',
+        padding: 16,
+        borderRadius: 8,
+        width: '80%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    subtitle: {
-        fontSize: 16,
-        color: '#666',
+    infoValue: {
+        color: '#333',
+    },
+    deconnection: {
+        marginTop: 20,
+    },
+    button: {
+        borderColor: '#ff4d4d',
+        borderWidth: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        flexDirection: 'row',
+    },
+    buttonText: {
+        color: '#ff0000',
+        fontWeight: 'bold',
     },
 });
