@@ -1,26 +1,44 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 
 export default function AddPage() {
     const router = useRouter();
+    const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
+
+    const handleMealSelection = (mealType: string) => {
+        setSelectedMeal(mealType);
+        console.log("Selected meal type:", mealType);
+    }
 
     return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.title}>Type de repas</Text>
                 <View style={styles.elementContainer}>
-                    <Pressable style={styles.element}>
+                    <Pressable
+                        style={selectedMeal === "breakfast" ? [styles.element, styles.selectedElement] : styles.element}
+                        onPress={() => handleMealSelection("breakfast")}
+                    >
                         <Text>Petit-déjeuner</Text>
                     </Pressable>
-                    <Pressable style={styles.element}>
+                    <Pressable
+                        style={selectedMeal === "lunch" ? [styles.element, styles.selectedElement] : styles.element}
+                        onPress={() => handleMealSelection("lunch")}
+                    >
                         <Text>Déjeuner</Text>
                     </Pressable>
-                    <Pressable style={styles.element}>
+                    <Pressable
+                        style={selectedMeal === "dinner" ? [styles.element, styles.selectedElement] : styles.element}
+                        onPress={() => handleMealSelection("dinner")}
+                    >
                         <Text>Dîner</Text>
                     </Pressable>
-                    <Pressable style={styles.element}>
+                    <Pressable
+                        style={selectedMeal === "snack" ? [styles.element, styles.selectedElement] : styles.element}
+                        onPress={() => handleMealSelection("snack")}
+                    >
                         <Text>Snack</Text>
                     </Pressable>
                 </View>
@@ -28,6 +46,7 @@ export default function AddPage() {
             <Text style={styles.title}>Ajouter un aliment</Text>
             <View style={styles.searchContainer}>
                 <TextInput style={styles.searchBar} placeholder="Search for food items..." />
+                <Text>  </Text>
                 <Pressable onPress={() => {
                     router.navigate('/camera')
                 }}>
@@ -56,7 +75,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
     },
     searchBar: {
-        width: 250,
+        width: '82%',
         height: 40,
         marginBottom: 16,
         borderRadius: 20,
@@ -65,7 +84,6 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        alignContent: 'space-between',
     },
     title: {
         fontSize: 20,
@@ -80,6 +98,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 8,
         width: 'auto',
+    },
+    selectedElement: {
+        backgroundColor: '#4CAF50',
+        borderColor: '#4CAF50',
+        color: '#ffffff',
     },
     elementContainer: {
         flexDirection: 'row',

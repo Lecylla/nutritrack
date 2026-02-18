@@ -8,7 +8,7 @@ export default function ProfileScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.profileInfo}>
-                <Ionicons name="person-circle-outline" size={100} color="#00aa00" />
+                <Ionicons name="person-circle-outline" size={100} color="#4CAF50" />
                 <Text style={styles.infoValue}>{user?.emailAddresses?.[0]?.emailAddress || 'Guest'}</Text>
             </View>
             <View style={styles.deconnection}>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     infoValue: {
-        color: '#333',
+        color: '#333333',
     },
     deconnection: {
         marginTop: 20,

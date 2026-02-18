@@ -16,9 +16,15 @@ export default function MainRoutesLayout() {
         options={{
           title: "Repas",
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "home" : "home-outline"} size={24} color="black" />
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={24}
+              color={focused ? "#4CAF50" : "#9E9E9E"}
+            />
           ),
           headerTitleAlign: 'center',
+          tabBarActiveTintColor: '#4CAF50',
+          tabBarInactiveTintColor: '#9E9E9E',
         }}
       />
       <Tabs.Screen
@@ -26,9 +32,15 @@ export default function MainRoutesLayout() {
         options={{
           title: "Nouveau Repas",
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "add-circle" : "add-circle-outline"} size={24} color="black" />
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={24}
+              color={focused ? "#4CAF50" : "#9E9E9E"}
+            />
           ),
           headerTitleAlign: 'center',
+          tabBarActiveTintColor: '#4CAF50',
+          tabBarInactiveTintColor: '#9E9E9E',
         }}
       />
       <Tabs.Screen
@@ -36,9 +48,15 @@ export default function MainRoutesLayout() {
         options={{
           title: "Profil",
           tabBarIcon: ({ focused }) => (
-            <Ionicons name={focused ? "person" : "person-outline"} size={24} color="black" />
+            <Ionicons
+              name={focused ? "person" : "person-outline"}
+              size={24}
+              color={focused ? "#4CAF50" : "#9E9E9E"}
+            />
           ),
           headerTitleAlign: 'center',
+          tabBarActiveTintColor: '#4CAF50',
+          tabBarInactiveTintColor: '#9E9E9E',
         }}
       />
     </Tabs>
