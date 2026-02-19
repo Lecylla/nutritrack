@@ -58,6 +58,7 @@ export default function Page() {
   const progress = dailyGoal > 0 ? todayCalories / dailyGoal : 0;
   const progressPercent = Math.max(0, Math.min(progress * 100, 100));
   const remainingCalories = Math.max(0, dailyGoal - todayCalories);
+  const isGoalExceeded = todayCalories > dailyGoal;
 
   const handleSaveGoal = async () => {
     const parsed = Number(goalInput);
@@ -107,7 +108,14 @@ export default function Page() {
           Aujourd'hui: {todayCalories.toFixed(0)} / {dailyGoal.toFixed(0)} kcal
         </Text>
         <View style={styles.progressTrack}>
-          <View style={[styles.progressFill, { width: `${progressPercent}%` }]} />
+          <View
+            style={[
+              styles.progressFill,
+              styles.progressFillDefault,
+              isGoalExceeded && styles.progressFillExceeded,
+              { width: `${progressPercent}%` },
+            ]}
+          />
         </View>
         <Text style={styles.goalHint}>
           {todayCalories >= dailyGoal
@@ -252,7 +260,12 @@ const styles = StyleSheet.create({
   progressFill: {
     height: "100%",
     borderRadius: 999,
+  },
+  progressFillDefault: {
     backgroundColor: "#4CAF50",
+  },
+  progressFillExceeded: {
+    backgroundColor: "#E0503D",
   },
   goalHint: {
     color: "#6a6a6a",

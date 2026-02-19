@@ -17,7 +17,7 @@ export default function HomeRoutesLayout() {
         name="[id]"
         options={{
           headerShown: true,
-          title: "Detail du repas",
+          title: "Détail du repas",
           headerBackTitle: "Mes repas",
           headerTitleAlign: "center",
         }}
