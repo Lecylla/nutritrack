@@ -29,7 +29,7 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Liste des repas enregistres</Text>
+      <Text style={styles.title}>Liste des repas enregistrés</Text>
       <Pressable
         style={styles.addButton}
         onPress={() => router.push("/(main)/(add)")}
@@ -39,7 +39,7 @@ export default function Page() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {meals.length === 0 ? (
-          <Text style={styles.emptyText}>Aucun repas enregistre pour le moment.</Text>
+          <Text style={styles.emptyText}>Aucun repas enregistré pour le moment.</Text>
         ) : (
           meals.map((meal) => {
             const parsedDate = new Date(meal.date);

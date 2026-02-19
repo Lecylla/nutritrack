@@ -21,8 +21,7 @@ export function MealComponent({
     <View style={styles.container}>
       <View style={styles.infoContainer}>
         <Text style={styles.mealType}>{mealType}</Text>
-        <Text style={styles.metaText}>Date: {date}</Text>
-        <Text style={styles.metaText}>Heure: {time}</Text>
+        <Text style={styles.metaText}>{date} {time}</Text>
         <Text style={styles.metaText}>Calories: {totalCalories.toFixed(0)} kcal</Text>
       </View>
 

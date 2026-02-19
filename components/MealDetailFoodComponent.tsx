@@ -60,10 +60,10 @@ export function MealDetailFoodComponent({ food }: MealDetailFoodComponentProps) 
       </View>
 
       <View style={styles.macrosRow}>
-        <MacroPill value={`${food.calories} kcal`} label="Calories" color="#66B36B" />
-        <MacroPill value={`${food.proteins}g`} label="Proteines" color="#61A6F0" />
-        <MacroPill value={`${food.carbs}g`} label="Glucides" color="#E6AA43" />
-        <MacroPill value={`${food.fats}g`} label="Lipides" color="#DF7568" />
+        <MacroPill value={`${food.calories.toFixed(0)} kcal`} label="Calories" color="#66B36B" />
+        <MacroPill value={`${food.proteins.toFixed(1)}g`} label="Proteines" color="#61A6F0" />
+        <MacroPill value={`${food.carbs.toFixed(1)}g`} label="Glucides" color="#E6AA43" />
+        <MacroPill value={`${food.fats.toFixed(1)}g`} label="Lipides" color="#DF7568" />
       </View>
     </View>
   );

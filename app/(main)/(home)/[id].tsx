@@ -3,9 +3,31 @@ import { StyleSheet, Text, View, ScrollView, Pressable, Alert } from "react-nati
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Meal } from "../../../data/meals";
 import { getMeals, deleteMeal } from "../../../data/meals";
+import { Food } from "../../../data/food";
 import { MealDetailFoodComponent } from "../../../components/MealDetailFoodComponent";
 
-export default function MealDetailPage() {
+interface MealDetailProps {
+  food: Food;
+}
+
+function MacroPill({
+  value,
+  label,
+  color,
+}: {
+  value: string;
+  label: string;
+  color: string;
+}) {
+  return (
+    <View style={[styles.macroPill, { borderColor: color }]}>
+      <Text style={[styles.macroValue, { color }]}>{value}</Text>
+      <Text style={styles.macroLabel}>{label}</Text>
+    </View>
+  );
+}
+
+export default function MealDetailPage({ food }: MealDetailProps) {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [meal, setMeal] = useState<Meal | null>(null);
@@ -93,14 +115,15 @@ export default function MealDetailPage() {
       </Pressable>
 
       <View style={styles.summaryCard}>
-        <Text style={styles.mealName}>{meal.name}</Text>
-        <Text style={styles.metaText}>Date: {formattedDate}</Text>
-        <Text style={styles.metaText}>Heure: {formattedTime}</Text>
-        <Text style={styles.metaText}>Nombre d'aliments: {meal.foods.length}</Text>
-        <Text style={styles.metaText}>Calories totales: {totalCalories.toFixed(0)} kcal</Text>
-        <Text style={styles.metaText}>
-          Totaux macros (100g): P {totalProteins.toFixed(1)}g | G {totalCarbs.toFixed(1)}g | L {totalFats.toFixed(1)}g
-        </Text>
+        <Text style={styles.mealName}>{meal.name} ({meal.foods.length} aliments)</Text>
+        <Text style={styles.metaText}>{formattedDate} {formattedTime}</Text>
+
+        <View style={styles.macrosRow}>
+          <MacroPill value={`${totalCalories.toFixed(0)} kcal`} label="Calories" color="#66B36B" />
+          <MacroPill value={`${totalProteins.toFixed(1)}g`} label="Proteines" color="#61A6F0" />
+          <MacroPill value={`${totalCarbs.toFixed(1)}g`} label="Glucides" color="#E6AA43" />
+          <MacroPill value={`${totalFats.toFixed(1)}g`} label="Lipides" color="#DF7568" />
+        </View>
       </View>
 
       <Text style={styles.sectionTitle}>Aliments</Text>
@@ -166,5 +189,28 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "700",
+  },
+  macrosRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  macroPill: {
+    flex: 1,
+    borderWidth: 2,
+    borderRadius: 12,
+    paddingVertical: 8,
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  },
+  macroValue: {
+    fontSize: 30 / 2,
+    fontWeight: "700",
+  },
+  macroLabel: {
+    fontSize: 24 / 2,
+    color: "#8f8f8f",
+    marginTop: 2,
+    fontWeight: "600",
   },
 });
