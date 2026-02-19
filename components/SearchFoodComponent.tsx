@@ -32,8 +32,9 @@ export function SearchFoodComponent({ food, onAdd, isAdded }: Props) {
             </Text>
           </View>
           <Pressable
-            style={styles.addButton}
+            style={[styles.addButton, isAdded && styles.addedButton]}
             onPress={() => onAdd(food)}
+            hitSlop={10}
           >
             <Text>
               <Ionicons
@@ -61,8 +62,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     padding: 12,
-    borderBottomWidth: 1,
+    borderWidth: 1,
     borderColor: "#eee",
+    borderRadius: 12,
+    marginBottom: 10,
     backgroundColor: "#fff",
   },
   image: {
@@ -100,6 +103,7 @@ const styles = StyleSheet.create({
   nutritionRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: 10,
   },
   calories: {
     fontSize: 13,
@@ -115,6 +119,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     justifyContent: "center",
+  },
+  addedButton: {
+    backgroundColor: "#2e7d32",
   },
   addIcon: {
     color: "#fff",

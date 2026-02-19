@@ -15,6 +15,7 @@ export default function MainRoutesLayout() {
         name="(home)"
         options={{
           title: "Repas",
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}

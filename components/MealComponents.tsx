@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 interface MealComponentProps {
@@ -18,33 +18,40 @@ export function MealComponent({
   onPressDetail,
 }: MealComponentProps) {
   return (
-    <View style={styles.container}>
-      <View style={styles.infoContainer}>
-        <Text style={styles.mealType}>{mealType}</Text>
-        <Text style={styles.metaText}>{date} {time}</Text>
-        <Text style={styles.metaText}>Calories: {totalCalories.toFixed(0)} kcal</Text>
+    <Pressable style={styles.container} onPress={onPressDetail}>
+      <View style={styles.topRow}>
+        <View style={styles.infoContainer}>
+          <Text style={styles.mealType}>{mealType}</Text>
+          <Text style={styles.metaText}>
+            {date} - {time}
+          </Text>
+          <Text style={styles.caloriesText}>{totalCalories.toFixed(0)} kcal</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color="#9e9e9e" />
       </View>
-
-      <Pressable style={styles.detailButton} onPress={onPressDetail}>
-        <Ionicons name="eye-outline" size={18} color="#fff" />
-        <Text style={styles.detailButtonText}>Voir le detail</Text>
-      </Pressable>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#ffffff",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#e8e8e8",
+    borderColor: "#e7e7e7",
     padding: 14,
     marginBottom: 12,
-    gap: 12,
+    gap: 10,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   infoContainer: {
-    gap: 4,
+    gap: 3,
+    flex: 1,
+    marginRight: 8,
   },
   mealType: {
     fontSize: 18,
@@ -55,6 +62,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
+  caloriesText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#3d8f43",
+  },
   detailButton: {
     alignSelf: "flex-start",
     flexDirection: "row",
@@ -62,12 +74,12 @@ const styles = StyleSheet.create({
     gap: 6,
     backgroundColor: "#4CAF50",
     borderRadius: 20,
-    paddingVertical: 8,
+    paddingVertical: 7,
     paddingHorizontal: 12,
   },
   detailButtonText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
   },
 });

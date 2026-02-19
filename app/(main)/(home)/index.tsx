@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Meal, getMeals } from "../../../data/meals";
 import { MealComponent } from "../../../components/MealComponents";
 
@@ -14,9 +15,7 @@ export default function Page() {
 
       const loadMeals = async () => {
         const savedMeals = await getMeals();
-        if (isMounted) {
-          setMeals(savedMeals);
-        }
+        if (isMounted) setMeals(savedMeals);
       };
 
       loadMeals();
@@ -29,22 +28,32 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Liste des repas enregistrés</Text>
-      <Pressable
-        style={styles.addButton}
-        onPress={() => router.push("/(main)/(add)")}
-      >
-        <Text style={styles.addButtonText}>Ajouter un repas</Text>
-      </Pressable>
+      <View style={styles.headerRow}>
+        <View>
+          <Text style={styles.title}>Mes repas</Text>
+          <Text style={styles.subtitle}>
+            {meals.length} repas enregistré{meals.length > 1 ? "s" : ""}
+          </Text>
+        </View>
+        <Pressable style={styles.addButton} onPress={() => router.push("/(main)/(add)")}>
+          <Ionicons name="add" size={18} color="#fff" />
+          <Text style={styles.addButtonText}>Ajouter</Text>
+        </Pressable>
+      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {meals.length === 0 ? (
-          <Text style={styles.emptyText}>Aucun repas enregistré pour le moment.</Text>
+          <View style={styles.emptyCard}>
+            <Ionicons name="restaurant-outline" size={30} color="#97a19a" />
+            <Text style={styles.emptyTitle}>Aucun repas enregistre</Text>
+            <Text style={styles.emptyText}>
+              Commence par ajouter ton premier repas depuis l'onglet Ajouter.
+            </Text>
+          </View>
         ) : (
           meals.map((meal) => {
             const parsedDate = new Date(meal.date);
             const hasValidDate = !Number.isNaN(parsedDate.getTime());
-
             const formattedDate = hasValidDate
               ? parsedDate.toLocaleDateString("fr-FR")
               : meal.date;
@@ -54,7 +63,6 @@ export default function Page() {
                   minute: "2-digit",
                 })
               : "--:--";
-
             const totalCalories = meal.foods.reduce(
               (sum, food) => sum + (food.calories ?? 0),
               0
@@ -67,9 +75,7 @@ export default function Page() {
                 date={formattedDate}
                 time={formattedTime}
                 totalCalories={totalCalories}
-                onPressDetail={() => {
-                  router.push(`/(main)/(home)/${meal.id}`);
-                }}
+                onPressDetail={() => router.push(`/(main)/(home)/${meal.id}`)}
               />
             );
           })
@@ -84,27 +90,55 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     gap: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f5f6f7",
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontSize: 24,
+    fontWeight: "800",
+    color: "#121212",
   },
-  emptyText: {
-    color: "#666",
-    fontSize: 14,
+  subtitle: {
+    fontSize: 13,
+    color: "#707070",
+    marginTop: 2,
   },
   addButton: {
-    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     backgroundColor: "#4CAF50",
     borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    marginBottom: 4,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
   },
   addButtonText: {
-    color: "#ffffff",
+    color: "#fff",
     fontWeight: "700",
+  },
+  emptyCard: {
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    padding: 20,
+    marginTop: 8,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#333",
+    marginTop: 8,
+  },
+  emptyText: {
+    marginTop: 4,
+    fontSize: 13,
+    color: "#6d6d6d",
+    textAlign: "center",
   },
 });
