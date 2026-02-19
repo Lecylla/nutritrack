@@ -1,16 +1,97 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Food, Meal, searchFoodByText, searchFood } from '../../../data/food';
+import { saveMeal } from '../../../data/meals';
+import { SearchFoodComponent } from '../../../components/SearchFoodComponent';
 
 export default function AddPage() {
     const router = useRouter();
     const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
+    const [selectedFoods, setSelectedFoods] = useState<Food[]>([]);
 
     const handleMealSelection = (mealType: string) => {
         setSelectedMeal(mealType);
         console.log("Selected meal type:", mealType);
     }
+
+    const [query, setQuery] = useState("");
+    const [results, setResults] = useState<Food[]>([]);
+
+    const mealTypeLabelMap: Record<string, string> = {
+        breakfast: "Petit-dejeuner",
+        lunch: "Dejeuner",
+        dinner: "Diner",
+        snack: "Snack",
+    };
+
+    const handleToggleFood = (food: Food) => {
+        setSelectedFoods((prev) => {
+            const isAlreadyAdded = prev.some((item) => item.id === food.id);
+
+            if (isAlreadyAdded) {
+                return prev.filter((item) => item.id !== food.id);
+            }
+
+            return [...prev, food];
+        });
+    };
+
+    const handleSaveMeal = async () => {
+        if (!selectedMeal) {
+            Alert.alert("Type de repas requis", "Selectionne un type de repas.");
+            return;
+        }
+
+        if (selectedFoods.length === 0) {
+            Alert.alert("Aucun aliment", "Ajoute au moins un aliment au repas.");
+            return;
+        }
+
+        const now = new Date();
+        const meal: Meal = {
+            id: now.getTime().toString(),
+            name: mealTypeLabelMap[selectedMeal] ?? selectedMeal,
+            date: now.toISOString(),
+            foods: selectedFoods,
+        };
+
+        await saveMeal(meal);
+
+        setSelectedFoods([]);
+        setSelectedMeal(null);
+        setQuery("");
+        setResults([]);
+
+        router.navigate("/(main)/(home)");
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (query.length > 2) {
+                const foods = await searchFoodByText(query);
+                setResults(foods);
+            } else {
+                setResults([]);
+            }
+        }, 400);
+
+        return () => clearTimeout(timer);
+    }, [query]);
+
+    const { barcode } = useLocalSearchParams<{ barcode?: string }>();
+
+    useEffect(() => {
+        if (barcode) {
+            (async () => {
+                const food = await searchFood(barcode);
+                if (food) {
+                    setResults([food]);
+                }
+            })();
+        }
+    }, [barcode]);
 
     return (
         <View style={styles.container}>
@@ -45,7 +126,12 @@ export default function AddPage() {
             </View>
             <Text style={styles.title}>Ajouter un aliment</Text>
             <View style={styles.searchContainer}>
-                <TextInput style={styles.searchBar} placeholder="Search for food items..." />
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search for food items..."
+                    value={query}
+                    onChangeText={setQuery}
+                />
                 <Text>  </Text>
                 <Pressable onPress={() => {
                     router.navigate('/camera')
@@ -53,8 +139,20 @@ export default function AddPage() {
                     <Ionicons name="barcode-outline" style={styles.barcodeIcon} />
                 </Pressable>
             </View>
-            <Pressable style={styles.validateButton}>
-                <Text style={styles.validateButtonText}>Ajouter le repas</Text>
+            <ScrollView>
+                {results.map((item) => (
+                    <SearchFoodComponent
+                        key={item.id}
+                        food={item}
+                        onAdd={handleToggleFood}
+                        isAdded={selectedFoods.some((food) => food.id === item.id)}
+                    />
+                ))}
+            </ScrollView>
+            <Pressable style={styles.validateButton} onPress={handleSaveMeal}>
+                <Text style={styles.validateButtonText}>
+                    Ajouter le repas ({selectedFoods.length})
+                </Text>
             </Pressable>
         </View>
     );

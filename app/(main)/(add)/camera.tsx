@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import { useRef } from "react";
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from "expo-camera";
+import React, { useState } from "react";
+import { useRouter } from "expo-router";
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef<CameraView>(null);
+  const [scanned, setScanned] = useState(false);
+  const router = useRouter();
 
   if (!permission) {
     return <View />;
@@ -21,20 +23,28 @@ export default function CameraScreen() {
     );
   }
 
-  const takePhoto = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync();
-      console.log(photo);
-    }
+  const handleBarCodeScanned = (result: BarcodeScanningResult) => {
+    if (scanned) return;
+
+    setScanned(true);
+
+    // On retourne vers la page add avec le code-barres
+    router.replace({
+      pathname: "/(main)/(add)",
+      params: { barcode: result.data },
+    });
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <CameraView style={{ flex: 1 }} ref={cameraRef}>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.captureButton} onPress={takePhoto} />
-        </View>
-      </CameraView>
+      <CameraView
+        style={{ flex: 1 }}
+        facing="back"
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
+        }}
+      />
     </View>
   );
 }
@@ -52,17 +62,5 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingBottom: 40,
-  },
-  captureButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: "white",
   },
 });
