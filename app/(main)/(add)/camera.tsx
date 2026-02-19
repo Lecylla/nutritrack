@@ -29,9 +29,12 @@ export default function CameraScreen() {
     setScanned(true);
 
     // On retourne vers la page add avec le code-barres
-    router.replace({
+    router.navigate({
       pathname: "/(main)/(add)",
-      params: { barcode: result.data },
+      params: {
+        barcode: result.data,
+        scanTs: Date.now().toString(),
+      },
     });
   };
 

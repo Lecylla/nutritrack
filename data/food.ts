@@ -10,13 +10,6 @@ export interface Food {
   fats: number;
 }
 
-export interface Meal {
-  id: string;
-  name: string;
-  date: string;
-  foods: Food[];
-}
-
 const OPENFOODFACTS_API =
     "https://fr.openfoodfacts.org/api/v2/product";
 

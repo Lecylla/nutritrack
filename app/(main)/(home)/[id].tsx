@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { Meal } from "../../../data/food";
-import { getMeals } from "../../../data/meals";
+import { StyleSheet, Text, View, ScrollView, Pressable, Alert } from "react-native";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { Meal } from "../../../data/meals";
+import { getMeals, deleteMeal } from "../../../data/meals";
 import { MealDetailFoodComponent } from "../../../components/MealDetailFoodComponent";
 
 export default function MealDetailPage() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [meal, setMeal] = useState<Meal | null>(null);
 
@@ -47,9 +48,9 @@ export default function MealDetailPage() {
     : meal.date;
   const formattedTime = hasValidDate
     ? parsedDate.toLocaleTimeString("fr-FR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
+      hour: "2-digit",
+      minute: "2-digit",
+    })
     : "--:--";
 
   const totalCalories = meal.foods.reduce(
@@ -63,9 +64,33 @@ export default function MealDetailPage() {
   const totalCarbs = meal.foods.reduce((sum, food) => sum + (food.carbs ?? 0), 0);
   const totalFats = meal.foods.reduce((sum, food) => sum + (food.fats ?? 0), 0);
 
+  const handleDeleteMeal = () => {
+    if (!id) return;
+
+    Alert.alert(
+      "Supprimer le repas",
+      "Voulez-vous vraiment supprimer ce repas ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: async () => {
+            await deleteMeal(id);
+            router.replace("/(main)/(home)");
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Detail du repas</Text>
+
+      <Pressable style={styles.deleteButton} onPress={handleDeleteMeal}>
+        <Text style={styles.deleteButtonText}>Supprimer le repas</Text>
+      </Pressable>
 
       <View style={styles.summaryCard}>
         <Text style={styles.mealName}>{meal.name}</Text>
@@ -126,5 +151,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     marginBottom: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#E53935",
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignSelf: "flex-start",
+    marginLeft: 180,
+    marginTop: -50,
+    marginBottom: 15,
+  },
+  deleteButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
   },
 });

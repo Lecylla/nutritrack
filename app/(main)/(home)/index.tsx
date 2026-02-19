@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { StyleSheet, Text, View, ScrollView } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Meal } from "../../../data/food";
-import { getMeals } from "../../../data/meals";
+import { Meal, getMeals } from "../../../data/meals";
 import { MealComponent } from "../../../components/MealComponents";
 
 export default function Page() {
@@ -30,11 +29,17 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Liste des repas enregistrés</Text>
+      <Text style={styles.title}>Liste des repas enregistres</Text>
+      <Pressable
+        style={styles.addButton}
+        onPress={() => router.push("/(main)/(add)")}
+      >
+        <Text style={styles.addButtonText}>Ajouter un repas</Text>
+      </Pressable>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {meals.length === 0 ? (
-          <Text style={styles.emptyText}>Aucun repas enregistré pour le moment.</Text>
+          <Text style={styles.emptyText}>Aucun repas enregistre pour le moment.</Text>
         ) : (
           meals.map((meal) => {
             const parsedDate = new Date(meal.date);
@@ -50,12 +55,18 @@ export default function Page() {
                 })
               : "--:--";
 
+            const totalCalories = meal.foods.reduce(
+              (sum, food) => sum + (food.calories ?? 0),
+              0
+            );
+
             return (
               <MealComponent
                 key={meal.id}
                 mealType={meal.name}
                 date={formattedDate}
                 time={formattedTime}
+                totalCalories={totalCalories}
                 onPressDetail={() => {
                   router.push(`/(main)/(home)/${meal.id}`);
                 }}
@@ -83,5 +94,17 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#666",
     fontSize: 14,
+  },
+  addButton: {
+    alignSelf: "flex-start",
+    backgroundColor: "#4CAF50",
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 4,
+  },
+  addButtonText: {
+    color: "#ffffff",
+    fontWeight: "700",
   },
 });

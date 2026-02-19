@@ -6,6 +6,7 @@ interface MealComponentProps {
   mealType: string;
   date: string;
   time: string;
+  totalCalories: number;
   onPressDetail: () => void;
 }
 
@@ -13,6 +14,7 @@ export function MealComponent({
   mealType,
   date,
   time,
+  totalCalories,
   onPressDetail,
 }: MealComponentProps) {
   return (
@@ -21,6 +23,7 @@ export function MealComponent({
         <Text style={styles.mealType}>{mealType}</Text>
         <Text style={styles.metaText}>Date: {date}</Text>
         <Text style={styles.metaText}>Heure: {time}</Text>
+        <Text style={styles.metaText}>Calories: {totalCalories.toFixed(0)} kcal</Text>
       </View>
 
       <Pressable style={styles.detailButton} onPress={onPressDetail}>

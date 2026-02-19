@@ -1,15 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ScrollView, View, Text, StyleSheet, Pressable, TextInput, Alert } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Food, Meal, searchFoodByText, searchFood } from '../../../data/food';
-import { saveMeal } from '../../../data/meals';
+import { Food, searchFoodByText, searchFood } from '../../../data/food';
+import { Meal, saveMeal } from '../../../data/meals';
 import { SearchFoodComponent } from '../../../components/SearchFoodComponent';
+import { useMealContext } from '../../../context/MealContext';
 
 export default function AddPage() {
     const router = useRouter();
     const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
-    const [selectedFoods, setSelectedFoods] = useState<Food[]>([]);
+    const {
+        currentMealFoods,
+        addFoodToCurrentMeal,
+        removeFoodFromCurrentMeal,
+        clearCurrentMealFoods,
+    } = useMealContext();
 
     const handleMealSelection = (mealType: string) => {
         setSelectedMeal(mealType);
@@ -18,6 +24,16 @@ export default function AddPage() {
 
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<Food[]>([]);
+    const displayedFoods = useMemo(() => {
+        const merged = [...currentMealFoods, ...results];
+        const uniqueById = new Map<string, Food>();
+
+        merged.forEach((food) => {
+            uniqueById.set(food.id, food);
+        });
+
+        return Array.from(uniqueById.values());
+    }, [currentMealFoods, results]);
 
     const mealTypeLabelMap: Record<string, string> = {
         breakfast: "Petit-dejeuner",
@@ -27,15 +43,14 @@ export default function AddPage() {
     };
 
     const handleToggleFood = (food: Food) => {
-        setSelectedFoods((prev) => {
-            const isAlreadyAdded = prev.some((item) => item.id === food.id);
+        const isAlreadyAdded = currentMealFoods.some((item) => item.id === food.id);
 
-            if (isAlreadyAdded) {
-                return prev.filter((item) => item.id !== food.id);
-            }
+        if (isAlreadyAdded) {
+            removeFoodFromCurrentMeal(food.id);
+            return;
+        }
 
-            return [...prev, food];
-        });
+        addFoodToCurrentMeal(food);
     };
 
     const handleSaveMeal = async () => {
@@ -44,7 +59,7 @@ export default function AddPage() {
             return;
         }
 
-        if (selectedFoods.length === 0) {
+        if (currentMealFoods.length === 0) {
             Alert.alert("Aucun aliment", "Ajoute au moins un aliment au repas.");
             return;
         }
@@ -54,12 +69,12 @@ export default function AddPage() {
             id: now.getTime().toString(),
             name: mealTypeLabelMap[selectedMeal] ?? selectedMeal,
             date: now.toISOString(),
-            foods: selectedFoods,
+            foods: currentMealFoods,
         };
 
         await saveMeal(meal);
 
-        setSelectedFoods([]);
+        clearCurrentMealFoods();
         setSelectedMeal(null);
         setQuery("");
         setResults([]);
@@ -72,7 +87,7 @@ export default function AddPage() {
             if (query.length > 2) {
                 const foods = await searchFoodByText(query);
                 setResults(foods);
-            } else {
+            } else if (query.length > 0) {
                 setResults([]);
             }
         }, 400);
@@ -80,18 +95,26 @@ export default function AddPage() {
         return () => clearTimeout(timer);
     }, [query]);
 
-    const { barcode } = useLocalSearchParams<{ barcode?: string }>();
+    const { barcode, scanTs } = useLocalSearchParams<{ barcode?: string | string[]; scanTs?: string }>();
 
     useEffect(() => {
-        if (barcode) {
+        const normalizedBarcode = Array.isArray(barcode) ? barcode[0] : barcode;
+        const trimmedBarcode = normalizedBarcode?.trim();
+
+        if (trimmedBarcode) {
             (async () => {
-                const food = await searchFood(barcode);
+                const food = await searchFood(trimmedBarcode);
                 if (food) {
-                    setResults([food]);
+                    setResults((prev) => {
+                        const withoutDuplicate = prev.filter((item) => item.id !== food.id);
+                        return [food, ...withoutDuplicate];
+                    });
+                } else {
+                    Alert.alert("Produit introuvable", "Aucun aliment trouve pour ce code-barres.");
                 }
             })();
         }
-    }, [barcode]);
+    }, [barcode, scanTs]);
 
     return (
         <View style={styles.container}>
@@ -140,18 +163,18 @@ export default function AddPage() {
                 </Pressable>
             </View>
             <ScrollView>
-                {results.map((item) => (
+                {displayedFoods.map((item) => (
                     <SearchFoodComponent
                         key={item.id}
                         food={item}
                         onAdd={handleToggleFood}
-                        isAdded={selectedFoods.some((food) => food.id === item.id)}
+                        isAdded={currentMealFoods.some((food) => food.id === item.id)}
                     />
                 ))}
             </ScrollView>
             <Pressable style={styles.validateButton} onPress={handleSaveMeal}>
                 <Text style={styles.validateButtonText}>
-                    Ajouter le repas ({selectedFoods.length})
+                    Ajouter le repas ({currentMealFoods.length})
                 </Text>
             </Pressable>
         </View>
