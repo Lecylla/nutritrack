@@ -32,9 +32,9 @@ export default function AddPage() {
   } = useMealContext();
 
   const mealTypeLabelMap: Record<MealType, string> = {
-    breakfast: "Petit-dejeuner",
-    lunch: "Dejeuner",
-    dinner: "Diner",
+    breakfast: "Petit-déjeuner",
+    lunch: "Déjeuner",
+    dinner: "Dîner",
     snack: "Snack",
   };
 
@@ -121,13 +121,7 @@ export default function AddPage() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Nouveau repas</Text>
-      <Text style={styles.subtitle}>
-        Selection: {currentMealFoods.length} aliment
-        {currentMealFoods.length > 1 ? "s" : ""}
-      </Text>
-
-      <Text style={styles.sectionTitle}>Type de repas</Text>
+      <Text style={styles.title}>Type de repas</Text>
       <View style={styles.elementContainer}>
         {(["breakfast", "lunch", "dinner", "snack"] as MealType[]).map((mealType) => {
           const isSelected = selectedMeal === mealType;
@@ -145,7 +139,7 @@ export default function AddPage() {
         })}
       </View>
 
-      <Text style={styles.sectionTitle}>Ajouter un aliment</Text>
+      <Text style={styles.title}>Ajouter un aliment</Text>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputWrapper}>
           <Ionicons name="search-outline" size={18} color="#777" />
@@ -219,18 +213,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     color: "#111",
+    marginBottom: 12,
   },
   subtitle: {
     marginTop: 4,
     marginBottom: 16,
     color: "#666",
     fontSize: 14,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 10,
-    color: "#222",
   },
   elementContainer: {
     flexDirection: "row",

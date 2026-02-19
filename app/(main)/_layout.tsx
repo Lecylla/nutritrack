@@ -32,6 +32,7 @@ export default function MainRoutesLayout() {
         name="(add)"
         options={{
           title: "Nouveau Repas",
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "add-circle" : "add-circle-outline"}

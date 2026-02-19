@@ -17,7 +17,7 @@ export default function ProfileScreen() {
       <View style={styles.deconnection}>
         <Pressable style={styles.button} onPress={() => signOut()}>
           <Ionicons name="log-out-outline" size={20} color="#ff0000" />
-          <Text style={styles.buttonText}> Se deconnecter</Text>
+          <Text style={styles.buttonText}> Se déconnecter</Text>
         </Pressable>
       </View>
     </View>
